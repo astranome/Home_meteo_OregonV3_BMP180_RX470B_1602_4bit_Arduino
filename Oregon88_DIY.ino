@@ -20,7 +20,16 @@ Adafruit_BMP085 bmp;
 Oregon_NR oregon(2, 0); // Если светодиод не нужен
 //LiquidCrystal_I2C lcd(0x27,16,2); 
 long a=0;
-
+byte degree[8] = // кодируем символ градуса
+{
+B00111,
+B00101,
+B00111,
+B00000,
+B00000,
+B00000,
+B00000,
+};
 void setup() {
    Serial.begin(115200);
   //вкючение прослушивания радиоканала  
@@ -29,12 +38,12 @@ void setup() {
   // устанавливаем размер (количество столбцов и строк) экрана
   lcdm.begin(16, 2);
   // печатаем первую строку
-  lcdm.print("Еле включил !@#$%^&* :-)");
+  lcdm.print("ЛУНТИК:Я родился");
  if (!bmp.begin()) {
   Serial.println("Could not find a valid BMP085 sensor, check wiring!");
   while (1) {}
   }
-  
+ lcdm.createChar(1, degree); // Создаем символ под номером 1 
   oregon.start(); 
  oregon.receiver_dump = 0;       //true - Включает "осциллограф" - отображение данных, полученных с приёмника
   
@@ -62,7 +71,7 @@ void loop() {
     Serial.print("Pressure = ");
     Serial.print(bmp.readPressure());
     Serial.println(" Pa");
-    lcdm.setCursor(10, 0);
+    lcdm.setCursor(11, 0);
     //lcdm.print("Давление ");
     int p = (bmp.readPressure()* 0.0075);
     lcdm.print(p);
@@ -97,8 +106,8 @@ void loop() {
       if (oregon.sens_tmp >= 10) lcd.print("T: ");
       */
       lcdm.print(oregon.sens_tmp, 1);
-     lcdm.print((char)223);   
-     lcdm.print("C ");
+     //lcdm.print((char)223);   
+     lcdm.print("\1C ");
             
       //lcd.print("BAT:");
      // if (oregon.sens_battery) lcd.print("F"); else lcd.print("e");
